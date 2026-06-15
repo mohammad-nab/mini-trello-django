@@ -1,0 +1,58 @@
+# ======================
+# Python
+# ======================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+
+# ======================
+# Django
+# ======================
+*.log
+db.sqlite3
+media/
+staticfiles/
+
+# Local settings (VERY important)
+.env
+.env.*
+
+# Django migrations (optional: usually NOT ignored in real projects)
+# migrations/__pycache__/
+
+# ======================
+# IDE / Editors
+# ======================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ======================
+# OS
+# ======================
+.DS_Store
+Thumbs.db
+
+# ======================
+# Testing / Coverage
+# ======================
+htmlcov/
+.coverage
+.pytest_cache/
+
+# ======================
+# Docker
+# ======================
+*.pid
+
+# ======================
+# Node (only if you ever add frontend tools later)
+# ======================
+node_modules/
