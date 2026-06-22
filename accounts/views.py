@@ -2,7 +2,7 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from . import forms
 
 
@@ -45,3 +45,9 @@ class UserLoginView(View):
             "accounts/login.html",
             {"form": form}
         )
+
+
+class UserLogoutView(View):
+    def get(self, request):
+        logout(request)
+        return redirect("home:home")
