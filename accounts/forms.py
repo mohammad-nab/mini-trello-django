@@ -11,5 +11,5 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class CustomUserLoginForm(forms.Form):
-    email = forms.EmailField()
     username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)
