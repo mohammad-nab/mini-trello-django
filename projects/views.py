@@ -21,8 +21,8 @@ class CreateProjectView(LoginRequiredMixin, View):
             project = form.save(commit=False)
             project.owner = request.user
             project.save()
-
-            ProjectMember.objects.create(project=project,user=request.user,is_staff=True)
+            project.create_default_columns()
+            project.add_owner_as_member()
             messages.success(request,"Project created successfully",'success')
             return redirect("projects:detail-project",pk=project.pk)
 

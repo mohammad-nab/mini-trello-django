@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'home.apps.HomeConfig',
     'projects.apps.ProjectsConfig',
+     'tasks.apps.TasksConfig',
 ]
 
 AUTH_USER_MODEL = "accounts.CustomUser"

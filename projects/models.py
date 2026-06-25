@@ -15,6 +15,32 @@ class Project(models.Model):
     def __str__(self):
         return f'{self.name} - {self.updated_at}'
 
+    def create_default_columns(self):
+        from tasks.models import Column
+
+        if self.columns.exists():
+            return
+
+        defaults = [
+            "Todo",
+            "In Progress",
+            "Done",
+        ]
+
+        for index, name in enumerate(defaults, start=1):
+            Column.objects.create(
+                project=self,
+                title=name,
+                order=index,
+            )
+
+    def add_owner_as_member(self):
+
+        ProjectMember.objects.get_or_create(
+            project=self,
+            user=self.owner
+        )
+
 
 class ProjectMember(models.Model):
     project = models.ForeignKey(Project,on_delete=models.CASCADE)
