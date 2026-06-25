@@ -22,14 +22,14 @@ class CreateProjectView(View):
 
             ProjectMember.objects.create(project=project,user=request.user,is_staff=True)
             messages.success(request,"Project created successfully",'success')
-            return redirect("projects:detail-project")
+            return redirect("projects:detail-project",pk=project.pk)
 
         messages.error(request,"Project didn't create",'danger')
         return render(request, self.template_name,{"form":form})
 
 
 class DeleteProjectView(View):
-    def get(self, request, pk):
+    def post(self, request, pk):
         project = get_object_or_404(Project, pk=pk)
         project.delete()
         messages.success(request,"Project deleted successfully",'success')
