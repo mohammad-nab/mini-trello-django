@@ -29,15 +29,16 @@
             <a href="{% url 'projects:update-project' project.id %}" class="btn btn-warning">
                 Edit Project
             </a>
-
-            <form method="post"
-                  action="{% url 'projects:delete-project' project.id %}"
-                  class="d-inline">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger">
-                    Delete Project
-                </button>
-            </form>
+            {% if request.user == project.owner %}
+                <form method="post"
+                      action="{% url 'projects:delete-project' project.id %}"
+                      class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        Delete Project
+                    </button>
+                </form>
+            {% endif %}
 
         </div>
     </div>

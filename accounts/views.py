@@ -1,5 +1,5 @@
-from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
@@ -49,7 +49,7 @@ class UserLoginView(View):
         )
 
 
-class UserLogoutView(View):
+class UserLogoutView(LoginRequiredMixin, View):
     def get(self, request):
         logout(request)
         return redirect("home:home")
