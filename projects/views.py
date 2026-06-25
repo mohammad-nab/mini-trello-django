@@ -52,10 +52,15 @@ class DetailProjectView(LoginRequiredMixin, View):
         if not is_member:
             return HttpResponseForbidden()
 
+        columns = project.columns.order_by('order')
+
         return render(
             request,
             'projects/project_detail.html',
-            {'project': project}
+            {
+                'project': project,
+                'columns': columns,
+            }
         )
 
 

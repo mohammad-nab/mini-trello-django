@@ -11,6 +11,20 @@ class Column(models.Model):
     def __str__(self):
         return f'{self.project}:{self.title}'
 
+    def save(self, *args, **kwargs):
+        if self.pk is None and self.order is None:
+            last_column = (
+                Column.objects
+                .filter(project=self.project)
+                .order_by('-order')
+                .first()
+            )
+
+            self.order = 0 if last_column is None else last_column.order + 1
+
+        super().save(*args, **kwargs)
+
+
 
 class Task(models.Model):
     column = models.ForeignKey(Column,on_delete=models.CASCADE,related_name='tasks')
