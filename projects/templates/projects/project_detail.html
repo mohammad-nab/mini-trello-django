@@ -61,8 +61,10 @@
             <div class="col-3">
 
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header d-flex justify-content-between align-items-center">
                         <strong>{{ column.title }}</strong>
+                        <a href="{% url 'tasks:update-column' column.id %}" class="btn btn-sm btn-primary">Edit</a>
+                        <a href="{% url 'tasks:delete-column' column.id %}" class="btn btn-sm btn-danger">Delete</a>
                     </div>
 
                     <div class="card-body">

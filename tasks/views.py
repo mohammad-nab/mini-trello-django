@@ -1,12 +1,14 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django import views
 from projects.models import Project
-from .forms import CreateColumnForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Column
+from .forms import titleColumnForm
 
 
-class CreateColumnView(views.View):
-    form_class = CreateColumnForm
-    template_name = 'tasks/create_column.html'
+class CreateColumnView(LoginRequiredMixin, views.View):
+    form_class = titleColumnForm
+    template_name = 'tasks/title_column.html'
 
     def get(self,request,pk):
         form = self.form_class()
@@ -23,3 +25,28 @@ class CreateColumnView(views.View):
 
             return redirect('projects:detail-project',pk=pk)
         return render(request, self.template_name, {'form': form})
+
+
+class UpdateColumnView(LoginRequiredMixin, views.View):
+    form_class = titleColumnForm
+    template_name = 'tasks/title_column.html'
+
+    def get(self, request, pk):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self,request,pk):
+        column = get_object_or_404(Column,pk=pk)
+        form = self.form_class(request.POST, instance=column)
+        if form.is_valid():
+            form.save()
+            return redirect('projects:detail-project',pk=column.project.pk)
+
+        return render(request, self.template_name, {'form': form})
+
+
+class DeleteColumnView(LoginRequiredMixin, views.View):
+    def get(self, request,pk):
+        column = get_object_or_404(Column,pk=pk)
+        column.delete()
+        return redirect('projects:detail-project',pk=column.project.pk)
