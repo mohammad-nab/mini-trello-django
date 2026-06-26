@@ -12,7 +12,7 @@ class Column(models.Model):
         return f'{self.project}:{self.title}'
 
     def save(self, *args, **kwargs):
-        if self.pk is None and self.order is None:
+        if self.pk is None:
             last_column = (
                 Column.objects
                 .filter(project=self.project)

@@ -8,7 +8,7 @@ class CreateColumnView(views.View):
     form_class = CreateColumnForm
     template_name = 'tasks/create_column.html'
 
-    def get(self,request):
+    def get(self,request,pk):
         form = self.form_class()
         return render(request, self.template_name, {'form': form})
 
@@ -21,5 +21,5 @@ class CreateColumnView(views.View):
             column.project = project
             form.save()
 
-            return redirect('projects:detail-project')
+            return redirect('projects:detail-project',pk=pk)
         return render(request, self.template_name, {'form': form})
