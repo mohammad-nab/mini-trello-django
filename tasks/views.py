@@ -3,7 +3,7 @@ from django import views
 from projects.models import Project
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Column
-from .forms import titleColumnForm
+from .forms import titleColumnForm, CreateTaskForm
 
 
 class CreateColumnView(LoginRequiredMixin, views.View):
@@ -18,7 +18,7 @@ class CreateColumnView(LoginRequiredMixin, views.View):
         form = self.form_class(request.POST)
         if form.is_valid():
 
-            project = Project.objects.get(pk=pk)
+            project = get_object_or_404(Project,pk=pk)
             column = form.save(commit=False)
             column.project = project
             form.save()
@@ -50,3 +50,22 @@ class DeleteColumnView(LoginRequiredMixin, views.View):
         column = get_object_or_404(Column,pk=pk)
         column.delete()
         return redirect('projects:detail-project',pk=column.project.pk)
+
+
+class CreateTaskView(LoginRequiredMixin, views.View):
+    form_class = CreateTaskForm
+    template_name = 'tasks/create_task.html'
+    def get(self, request,pk):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self,request, pk):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            column = get_object_or_404(Column, pk=pk)
+            task = form.save(commit=False)
+            task.column = column
+            task.save()
+            return redirect('projects:detail-project',pk=column.project.pk )
+
+        return render(request, self.template_name, {'form': form})

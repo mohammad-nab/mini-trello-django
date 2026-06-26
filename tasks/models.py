@@ -32,3 +32,12 @@ class Task(models.Model):
     description = models.TextField(blank=True)
     assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='assigned_to')
     order = models.PositiveIntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            last_task = (
+                Task.objects.filter(column=self.column).order_by('-order').first()
+            )
+            self.order = 0 if last_task is None else last_task.order + 1
+        
+        super().save(*args,**kwargs)

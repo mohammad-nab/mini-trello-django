@@ -81,7 +81,7 @@
                             </p>
                         {% endfor %}
 
-                        <a href="#"
+                        <a href="{% url 'tasks:create-task' column.id %}"
                            class="btn btn-sm btn-outline-primary w-100">
                             Add Task
                         </a>
