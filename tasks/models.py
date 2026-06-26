@@ -7,6 +7,8 @@ class Column(models.Model):
     project = models.ForeignKey("projects.Project",on_delete=models.CASCADE,related_name='columns')
     title = models.CharField(max_length=50)
     order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True,blank=True)
+    updated_at = models.DateTimeField(auto_now=True,blank=True)
 
     def __str__(self):
         return f'{self.project}:{self.title}'
@@ -32,6 +34,8 @@ class Task(models.Model):
     description = models.TextField(blank=True)
     assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='assigned_to')
     order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True,blank=True)
+    updated_at = models.DateTimeField(auto_now=True,blank=True)
 
     def save(self, *args, **kwargs):
         if self.pk is None:

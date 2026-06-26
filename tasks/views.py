@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django import views
 from projects.models import Project
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Column
-from .forms import titleColumnForm, CreateTaskForm
+from .models import Column, Task
+from .forms import titleColumnForm, TaskForm
 
 
 class CreateColumnView(LoginRequiredMixin, views.View):
@@ -53,7 +53,7 @@ class DeleteColumnView(LoginRequiredMixin, views.View):
 
 
 class CreateTaskView(LoginRequiredMixin, views.View):
-    form_class = CreateTaskForm
+    form_class = TaskForm
     template_name = 'tasks/create_task.html'
     def get(self, request,pk):
         form = self.form_class()
@@ -68,4 +68,17 @@ class CreateTaskView(LoginRequiredMixin, views.View):
             task.save()
             return redirect('projects:detail-project',pk=column.project.pk )
 
+
+class UpdateTaskView(LoginRequiredMixin, views.View):
+    form_class = TaskForm
+    template_name = 'tasks/update_task.html'
+    def get(self, request,pk):
+        form = self.form_class()
         return render(request, self.template_name, {'form': form})
+
+    def post(self,request,pk):
+        task = get_object_or_404(Task,pk=pk)
+        form = self.form_class(request.POST,instance=task)
+        if form.is_valid():
+            form.save()
+            return redirect('projects:detail-project',pk=task.column.project.pk)
