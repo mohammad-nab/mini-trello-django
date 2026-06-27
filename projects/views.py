@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseForbidden
+from conf import permissions
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from .models import ProjectMember, Project
@@ -31,6 +32,12 @@ class CreateProjectView(LoginRequiredMixin, View):
 
 
 class DeleteProjectView(LoginRequiredMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=kwargs['pk'])
+        if not permissions.is_project_owner(request.user, project):
+            return HttpResponseForbidden("You are not allowed to delete this project")
+        return super().dispatch(request, *args, **kwargs)
+
     def post(self, request, pk):
         project = get_object_or_404(Project, pk=pk)
         if request.user != project.owner:
@@ -41,24 +48,23 @@ class DeleteProjectView(LoginRequiredMixin, View):
 
 
 class DetailProjectView(LoginRequiredMixin, View):
+    def setup(self, request, *args, **kwargs):
+        self.project = get_object_or_404(Project, pk=kwargs['pk'])
+        return super().setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        if not permissions.is_project_member(request.user, self.project):
+            return HttpResponseForbidden("You are not allowed to view this project")
+        return super().dispatch(request, *args, **kwargs)
+
     def get(self, request, pk):
-        project = get_object_or_404(Project, pk=pk)
-
-        is_member = ProjectMember.objects.filter(
-            project=project,
-            user=request.user
-        ).exists()
-
-        if not is_member:
-            return HttpResponseForbidden()
-
-        columns = project.columns.order_by('order')
+        columns = self.project.columns.order_by('order')
 
         return render(
             request,
             'projects/project_detail.html',
             {
-                'project': project,
+                'project': self.project,
                 'columns': columns,
             }
         )

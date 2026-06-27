@@ -43,9 +43,16 @@ class Project(models.Model):
 
 
 class ProjectMember(models.Model):
+    class Roles(models.TextChoices):
+        OWNER = 'owner', 'Owner'
+        MEMBER = 'member', 'Member'
     project = models.ForeignKey(Project,on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
-    is_staff = models.BooleanField(default=False)
+    role = models.CharField(
+        max_length=10,
+        choices=Roles.choices,
+        default=Roles.MEMBER,
+    )
     joined_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
