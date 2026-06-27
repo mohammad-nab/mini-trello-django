@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.conf import settings
+from projects.models import ProjectMember
 
 
 class Column(models.Model):
@@ -45,3 +46,7 @@ class Task(models.Model):
             self.order = 0 if last_task is None else last_task.order + 1
         
         super().save(*args,**kwargs)
+
+
+    def __str__(self):
+        return f'{self.column.project}:{self.column}:{self.title}'

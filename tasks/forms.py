@@ -1,6 +1,6 @@
 from django import forms
 from .models import Column, Task
-from projects.models import ProjectMember
+from utils import project_members
 
 
 class titleColumnForm(forms.ModelForm):
@@ -14,9 +14,8 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = ['title','description','assigned_to']
 
-#TODO filter user that can assign to a task
-    '''
-    def __init__(self, *args, **kwargs):
-        super(CreateTaskForm, self).__init__(*args, **kwargs)
-        self.fields['assigned_to'].queryset = ProjectMember.objects.filter(project=kwargs['instance'].project)
-        '''
+    def __init__(self, *args, project=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if project:
+            self.fields["assigned_to"].queryset = project_members(project)
