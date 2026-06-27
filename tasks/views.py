@@ -71,9 +71,9 @@ class CreateTaskView(LoginRequiredMixin, views.View):
 
 class UpdateTaskView(LoginRequiredMixin, views.View):
     form_class = TaskForm
-    template_name = 'tasks/update_task.html'
+    template_name = 'tasks/create_task.html'
     def get(self, request,pk):
-        form = self.form_class()
+        form = self.form_class(instance=Task.objects.get(pk=pk))
         return render(request, self.template_name, {'form': form})
 
     def post(self,request,pk):
@@ -82,3 +82,12 @@ class UpdateTaskView(LoginRequiredMixin, views.View):
         if form.is_valid():
             form.save()
             return redirect('projects:detail-project',pk=task.column.project.pk)
+
+        return render(request, self.template_name, {'form': form})
+
+
+class DeleteTaskView(LoginRequiredMixin, views.View):
+    def get(self, request,pk):
+        task = get_object_or_404(Task,pk=pk)
+        task.delete()
+        return redirect('projects:detail-project',pk=task.column.project.pk)
