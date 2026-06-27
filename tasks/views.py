@@ -16,6 +16,7 @@ class CreateColumnView(LoginRequiredMixin, views.View):
         project = get_object_or_404(Project,pk=self.kwargs['pk'])
         if not permissions.is_project_owner(request.user, project):
             raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self,request,pk):
         form = self.form_class()
@@ -38,6 +39,12 @@ class UpdateColumnView(LoginRequiredMixin, views.View):
     form_class = titleColumnForm
     template_name = 'tasks/title_column.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        column = get_object_or_404(Column,pk=self.kwargs['pk'])
+        if not permissions.is_project_owner(request.user, column.project):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
     def get(self, request, pk):
         form = self.form_class()
         return render(request, self.template_name, {'form': form})
@@ -53,15 +60,29 @@ class UpdateColumnView(LoginRequiredMixin, views.View):
 
 
 class DeleteColumnView(LoginRequiredMixin, views.View):
+    def dispatch(self, request, *args, **kwargs):
+        column = get_object_or_404(Column,pk=self.kwargs['pk'])
+        if not permissions.is_project_owner(request.user, column.project):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
     def get(self, request,pk):
         column = get_object_or_404(Column,pk=pk)
+        project = column.project
         column.delete()
-        return redirect('projects:detail-project',pk=column.project.pk)
+        return redirect('projects:detail-project',pk=project.pk)
 
 
 class CreateTaskView(LoginRequiredMixin, views.View):
     form_class = TaskForm
     template_name = 'tasks/create_task.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        column = get_object_or_404(Column,pk=self.kwargs['pk'])
+        if not permissions.is_project_member(request.user, column.project):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
     def get(self, request,pk):
         form = self.form_class()
         return render(request, self.template_name, {'form': form})
@@ -79,6 +100,14 @@ class CreateTaskView(LoginRequiredMixin, views.View):
 class UpdateTaskView(LoginRequiredMixin, views.View):
     form_class = TaskForm
     template_name = 'tasks/create_task.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        task = get_object_or_404(Task,pk=self.kwargs['pk'])
+        if not permissions.is_project_member(request.user, task.column.project):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+
     def get(self, request,pk):
         form = self.form_class(instance=Task.objects.get(pk=pk))
         return render(request, self.template_name, {'form': form})
@@ -94,6 +123,12 @@ class UpdateTaskView(LoginRequiredMixin, views.View):
 
 
 class DeleteTaskView(LoginRequiredMixin, views.View):
+    def dispatch(self, request, *args, **kwargs):
+        task = get_object_or_404(Task,pk=self.kwargs['pk'])
+        if not permissions.is_project_owner(request.user, task.column.project):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
     def get(self, request,pk):
         task = get_object_or_404(Task,pk=pk)
         task.delete()

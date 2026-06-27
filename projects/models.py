@@ -38,7 +38,8 @@ class Project(models.Model):
 
         ProjectMember.objects.get_or_create(
             project=self,
-            user=self.owner
+            user=self.owner,
+            role='owner',
         )
 
 

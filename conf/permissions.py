@@ -1,4 +1,4 @@
-from projects.models import Project, ProjectMember
+from projects.models import ProjectMember
 
 
 def is_project_member(user, project):
