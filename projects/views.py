@@ -78,24 +78,25 @@ class DashboardProjectView(LoginRequiredMixin, View):
 
 class UpdateProjectView(LoginRequiredMixin, View):
     form_class = ProjectForm
+    def setup(self, request, *args, **kwargs):
+        self.project = get_object_or_404(Project, pk=kwargs['pk'])
+        return super().setup(request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        if not permissions.is_project_owner(request.user, self.project):
+            return HttpResponseForbidden("You are not allowed to update this project")
+        return super().dispatch(request, *args, **kwargs)
+
     def get(self, request, pk):
-        project = get_object_or_404(Project, pk=pk)
-        is_member = ProjectMember.objects.filter(project=project, user=request.user).exists()
-        if not is_member:
-            return HttpResponseForbidden()
-        form = self.form_class(instance=project)
+        form = self.form_class(instance=self.project)
         return render(request,'projects/project_update.html',{'form':form})
 
     def post(self, request, pk):
-        project = get_object_or_404(Project, pk=pk)
-        is_member = ProjectMember.objects.filter(project=project, user=request.user).exists()
-        if not is_member:
-            return HttpResponseForbidden()
-        form = self.form_class(request.POST, instance=project)
+        form = self.form_class(request.POST, instance=self.project)
         if form.is_valid():
             form.save()
             messages.success(request,"Project updated successfully",'success')
-            return redirect("projects:detail-project",pk=project.pk)
+            return redirect("projects:detail-project",pk=self.project.pk)
 
         return render(
             request,
