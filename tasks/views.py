@@ -1,7 +1,9 @@
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect, get_object_or_404
 from django import views
 from projects.models import Project
 from django.contrib.auth.mixins import LoginRequiredMixin
+from conf import permissions
 from .models import Column, Task
 from .forms import titleColumnForm, TaskForm
 
@@ -9,6 +11,11 @@ from .forms import titleColumnForm, TaskForm
 class CreateColumnView(LoginRequiredMixin, views.View):
     form_class = titleColumnForm
     template_name = 'tasks/title_column.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        project = get_object_or_404(Project,pk=self.kwargs['pk'])
+        if not permissions.is_project_owner(request.user, project):
+            raise PermissionDenied
 
     def get(self,request,pk):
         form = self.form_class()
