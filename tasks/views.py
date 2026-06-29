@@ -204,3 +204,16 @@ class MoveTaskView(LoginRequiredMixin, views.View):
             "task_id": task.id,
             "column_id": column.id,
         })
+
+
+class ActivityLogView(LoginRequiredMixin,views.View):
+    def dispatch(self, request, *args, **kwargs):
+        self.project = get_object_or_404(Project,pk=self.kwargs['pk'])
+        if not permissions.is_project_member(request.user, self.project):
+            raise PermissionDenied
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self,request, pk):
+        activities = ActivityLog.objects.filter(project=self.project)
+        return render(request,'tasks/activity-logs.html',{'activities': activities, 'project': self.project})
