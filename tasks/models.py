@@ -50,3 +50,14 @@ class Task(models.Model):
 
     def __str__(self):
         return f'{self.column.project}:{self.column}:{self.title}'
+
+
+class ActivityLog(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='activity_logs')
+    project = models.ForeignKey("projects.Project",on_delete=models.CASCADE,related_name='activity_logs')
+    activity_type = models.CharField(max_length=50)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True,blank=True)
+
+    def __str__(self):
+        return f'{self.user}:{self.activity_type} - {self.project}'
