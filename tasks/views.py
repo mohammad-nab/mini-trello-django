@@ -175,7 +175,7 @@ class DeleteTaskView(LoginRequiredMixin, views.View):
         )
         return redirect('projects:detail-project',pk=task.column.project.pk)
 
-
+#TODO only the one who assigned to the task can move it
 class MoveTaskView(LoginRequiredMixin, views.View):
     def post(self,request):
         data = json.loads(request.body)
@@ -186,7 +186,7 @@ class MoveTaskView(LoginRequiredMixin, views.View):
         column = get_object_or_404(Column,pk=column_id)
         task = get_object_or_404(Task,pk=task_id, column__project=column.project)
 
-        if not permissions.is_project_member(request.user, task.column.project):
+        if not permissions.is_project_member(request.user, task.column.project) or request.user != task.assigned_to:
             raise PermissionDenied
 
         task.column = column
