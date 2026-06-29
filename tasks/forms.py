@@ -1,6 +1,6 @@
 from django import forms
 from .models import Column, Task
-from utils import project_members
+from .utils import project_members
 
 
 class titleColumnForm(forms.ModelForm):
