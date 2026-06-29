@@ -5,7 +5,7 @@ from django import views
 from projects.models import Project
 from django.contrib.auth.mixins import LoginRequiredMixin
 from conf import permissions
-from .models import Column, Task
+from .models import Column, Task, ActivityLog
 from .forms import titleColumnForm, TaskForm
 import json
 
@@ -32,6 +32,12 @@ class CreateColumnView(LoginRequiredMixin, views.View):
             column = form.save(commit=False)
             column.project = project
             form.save()
+            ActivityLog.objects.create(
+                user=request.user,
+                project=column.project,
+                activity_type="create-column",
+                description=f"{request.user} created {column.name} column",
+            )
 
             return redirect('projects:detail-project',pk=pk)
         return render(request, self.template_name, {'form': form})
@@ -56,6 +62,12 @@ class UpdateColumnView(LoginRequiredMixin, views.View):
         form = self.form_class(request.POST, instance=column)
         if form.is_valid():
             form.save()
+            ActivityLog.objects.create(
+                user=request.user,
+                project=column.project,
+                activity_type="edit-column",
+                description=f"{request.user} edited {column.name} column",
+            )
             return redirect('projects:detail-project',pk=column.project.pk)
 
         return render(request, self.template_name, {'form': form})
@@ -71,7 +83,14 @@ class DeleteColumnView(LoginRequiredMixin, views.View):
     def get(self, request,pk):
         column = get_object_or_404(Column,pk=pk)
         project = column.project
+        name = column.title
         column.delete()
+        ActivityLog.objects.create(
+            user=request.user,
+            project=column.project,
+            activity_type="delete-column",
+            description=f"{request.user} deleted {name} column",
+        )
         return redirect('projects:detail-project',pk=project.pk)
 
 
@@ -95,6 +114,12 @@ class CreateTaskView(LoginRequiredMixin, views.View):
             task = form.save(commit=False)
             task.column = self.column
             task.save()
+            ActivityLog.objects.create(
+                user=request.user,
+                project=task.column.project,
+                activity_type="create-task",
+                description=f"{request.user} created {task.title} task",
+            )
             return redirect('projects:detail-project',pk=self.column.project.pk )
 
         return render(request, self.template_name, {'form': form})
@@ -120,6 +145,12 @@ class UpdateTaskView(LoginRequiredMixin, views.View):
         form = self.form_class(request.POST,instance=task)
         if form.is_valid():
             form.save()
+            ActivityLog.objects.create(
+                user=request.user,
+                project=task.column.project,
+                activity_type="edit-task",
+                description=f"{request.user} edited {task.title} task",
+            )
             return redirect('projects:detail-project',pk=task.column.project.pk)
 
         return render(request, self.template_name, {'form': form})
@@ -134,7 +165,14 @@ class DeleteTaskView(LoginRequiredMixin, views.View):
 
     def get(self, request,pk):
         task = get_object_or_404(Task,pk=pk)
+        name = task.title
         task.delete()
+        ActivityLog.objects.create(
+            user=request.user,
+            project=task.column.project,
+            activity_type="delete-task",
+            description=f"{request.user} deleted {name} task",
+        )
         return redirect('projects:detail-project',pk=task.column.project.pk)
 
 
@@ -153,6 +191,13 @@ class MoveTaskView(LoginRequiredMixin, views.View):
 
         task.column = column
         task.save()
+
+        ActivityLog.objects.create(
+            user=request.user,
+            project=task.column.project,
+            activity_type="move-task",
+            description=f"{request.user} moved {task.title} task",
+        )
 
         return JsonResponse({
             "success": True,

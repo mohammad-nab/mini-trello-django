@@ -4,7 +4,8 @@ from django.http import HttpResponseForbidden
 from conf import permissions
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from .models import ProjectMember, Project
+from .models import Project
+from tasks.models import ActivityLog
 from .forms import ProjectForm
 
 
@@ -95,6 +96,12 @@ class UpdateProjectView(LoginRequiredMixin, View):
         form = self.form_class(request.POST, instance=self.project)
         if form.is_valid():
             form.save()
+            ActivityLog.objects.create(
+                user=request.user,
+                project=self.project,
+                activity_type="edit-project",
+                description=f"{request.user} edited {self.project.name}",
+            )
             messages.success(request,"Project updated successfully",'success')
             return redirect("projects:detail-project",pk=self.project.pk)
 
