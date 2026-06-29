@@ -175,7 +175,7 @@ class DeleteTaskView(LoginRequiredMixin, views.View):
         )
         return redirect('projects:detail-project',pk=task.column.project.pk)
 
-#TODO only the one who assigned to the task can move it
+
 class MoveTaskView(LoginRequiredMixin, views.View):
     def post(self,request):
         data = json.loads(request.body)

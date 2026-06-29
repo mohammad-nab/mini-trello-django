@@ -17,6 +17,13 @@
                 {{ project.owner.username }}
             </p>
 
+            <p>
+                <strong>members:</strong>
+                {% for member in project_members %}
+                    {{ project_members.user.username}}
+                {% endfor %}
+            </p>
+
             <hr>
 
             <h5>Description</h5>

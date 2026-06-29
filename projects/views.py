@@ -4,7 +4,7 @@ from django.http import HttpResponseForbidden
 from conf import permissions
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from .models import Project
+from .models import Project, ProjectMember
 from tasks.models import ActivityLog
 from .forms import ProjectForm
 
@@ -48,6 +48,7 @@ class DeleteProjectView(LoginRequiredMixin, View):
         return redirect("projects:project-dashboard")
 
 
+#TODO show project members
 class DetailProjectView(LoginRequiredMixin, View):
     def setup(self, request, *args, **kwargs):
         self.project = get_object_or_404(Project, pk=kwargs['pk'])
@@ -61,12 +62,15 @@ class DetailProjectView(LoginRequiredMixin, View):
     def get(self, request, pk):
         columns = self.project.columns.order_by('order')
 
+        project_members = ProjectMember.objects.filter(project=self.project)
+
         return render(
             request,
             'projects/project_detail.html',
             {
                 'project': self.project,
                 'columns': columns,
+                'project_members': project_members,
             }
         )
 
