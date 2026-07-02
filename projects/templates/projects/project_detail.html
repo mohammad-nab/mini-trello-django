@@ -1,113 +1,119 @@
 {% extends 'templates/base.html' %}
 
 {% block content %}
-<div class="container mt-4">
+    <script>
 
-    <div class="card mb-4">
-        <div class="card-body">
+    </script>
 
-            <h2>{{ project.name }}</h2>
 
-            <p class="text-muted">
-                Created: {{ project.created_at }}
-            </p>
 
-            <p>
-                <strong>Owner:</strong>
-                {{ project.owner.username }}
-            </p>
+    <div class="container mt-4">
 
-            <p>
-                <strong>members:</strong>
-                {% for member in project_members %}
-                    {{ project_members.user.username}}
-                {% endfor %}
-            </p>
+        <div class="card mb-4">
+            <div class="card-body">
 
-            <hr>
+                <h2>{{ project.name }}</h2>
 
-            <h5>Description</h5>
-            <p>{{ project.description }}</p>
+                <p class="text-muted">
+                    Created: {{ project.created_at }}
+                </p>
 
-            <hr>
-            {% if request.user == project.owner %}
-            <a href="{% url 'projects:update-project' project.id %}"
-               class="btn btn-warning">
-                Edit Project
-            </a>
+                <p>
+                    <strong>Owner:</strong>
+                    {{ project.owner.username }}
+                </p>
 
-                <form method="post"
-                      action="{% url 'projects:delete-project' project.id %}"
-                      class="d-inline">
-                    {% csrf_token %}
-                    <button type="submit"
-                            class="btn btn-danger">
-                        Delete Project
-                    </button>
-                </form>
-            {% endif %}
+                <p>
+                    <strong>members:</strong>
+                    {% for member in project_members %}
+                        {{ project_members.user.username}}
+                    {% endfor %}
+                </p>
 
-        </div>
-    </div>
+                <hr>
 
-    <!-- BOARD SECTION -->
+                <h5>Description</h5>
+                <p>{{ project.description }}</p>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3>Board</h3>
-        <a href="{% url 'tasks:activity-logs' project.pk %}">activities</a>
-        {% if request.user == project.owner %}
-        <a href="{% url 'tasks:create-column' project.id %}"
-           class="btn btn-primary">
-            Add Column
-        </a>
-        {% endif %}
-    </div>
+                <hr>
+                {% if request.user == project.owner %}
+                <a href="{% url 'projects:update-project' project.id %}"
+                   class="btn btn-warning">
+                    Edit Project
+                </a>
 
-    <div class="row flex-nowrap overflow-auto">
-
-        {% for column in columns %}
-            <div class="col-3">
-
-                <div class="card column" data-column-id="{{ column.id }}">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <strong>{{ column.title }}</strong>
-                        {% if request.user == project.owner %}
-                        <a href="{% url 'tasks:update-column' column.id %}" class="btn btn-sm btn-primary">Edit</a>
-                        <a href="{% url 'tasks:delete-column' column.id %}" class="btn btn-sm btn-danger">Delete</a>
-                        {% endif %}
-                    </div>
-
-                        <div class="card-body task-list">
-
-                        {% for task in column.tasks.all %}
-                            <div class="card mb-2 task-card" draggable="true" data-task-id="{{ task.id }}">
-                                <div class="card-body d-flex justify-content-between align-items-center p-2">
-                                    {{ task.title }}
-                                    <a href="{% url 'tasks:update-task' task.id %}" class="btn btn-sm btn-primary">Edit</a>
-                                    {% if request.user == project.owner %}
-                                    <a href="{% url 'tasks:delete-task' task.id %}" class="btn btn-sm btn-danger">Delete</a>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% empty %}
-                            <p class="text-muted">
-                                No tasks yet
-                            </p>
-                        {% endfor %}
-
-                    </div>
-                        <a href="{% url 'tasks:create-task' column.id %}"
-                           class="btn btn-sm btn-outline-primary w-100">
-                            Add Task
-                        </a>
-                </div>
+                    <form method="post"
+                          action="{% url 'projects:delete-project' project.id %}"
+                          class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="btn btn-danger">
+                            Delete Project
+                        </button>
+                    </form>
+                {% endif %}
 
             </div>
-        {% empty %}
-            <p>No columns yet.</p>
-        {% endfor %}
+        </div>
+
+        <!-- BOARD SECTION -->
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>Board</h3>
+            <a href="{% url 'tasks:activity-logs' project.pk %}">activities</a>
+            {% if request.user == project.owner %}
+            <a href="{% url 'tasks:create-column' project.id %}"
+               class="btn btn-primary">
+                Add Column
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="row flex-nowrap overflow-auto">
+
+            {% for column in columns %}
+                <div class="col-3">
+
+                    <div class="card column" data-column-id="{{ column.id }}">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <strong>{{ column.title }}</strong>
+                            {% if request.user == project.owner %}
+                            <a href="{% url 'tasks:update-column' column.id %}" class="btn btn-sm btn-primary">Edit</a>
+                            <a href="{% url 'tasks:delete-column' column.id %}" class="btn btn-sm btn-danger">Delete</a>
+                            {% endif %}
+                        </div>
+
+                            <div class="card-body task-list">
+
+                            {% for task in column.tasks.all %}
+                                <div class="card mb-2 task-card" draggable="true" data-task-id="{{ task.id }}">
+                                    <div class="card-body d-flex justify-content-between align-items-center p-2">
+                                        {{ task.title }}
+                                        <a href="{% url 'tasks:update-task' task.id %}" class="btn btn-sm btn-primary">Edit</a>
+                                        {% if request.user == project.owner %}
+                                        <a href="{% url 'tasks:delete-task' task.id %}" class="btn btn-sm btn-danger">Delete</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <p class="text-muted">
+                                    No tasks yet
+                                </p>
+                            {% endfor %}
+
+                        </div>
+                            <a href="{% url 'tasks:create-task' column.id %}"
+                               class="btn btn-sm btn-outline-primary w-100">
+                                Add Task
+                            </a>
+                    </div>
+
+                </div>
+            {% empty %}
+                <p>No columns yet.</p>
+            {% endfor %}
+
+        </div>
 
     </div>
-
-</div>
 {% endblock %}

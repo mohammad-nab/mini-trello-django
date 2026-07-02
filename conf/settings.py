@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,7 +45,7 @@ INSTALLED_APPS = [
 ]
 
 AUTH_USER_MODEL = "accounts.CustomUser"
-ASGI_APPLICATION = 'conf.asgi.application'
+ASGI_APPLICATION = "conf.asgi.application"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
