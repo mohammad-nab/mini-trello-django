@@ -2,7 +2,21 @@
 
 {% block content %}
     <script>
+        const project_id = "{{ project.id }}";
 
+        const socket = new WebSocket(
+            `ws://${window.location.host}/ws/projects/${project_id}/`
+        );
+        socket.onopen = function (){
+            socket.send(JSON.stringify({
+                message:"Hello"
+                }
+            ));
+        };
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            console.log(data);
+        };
     </script>
 
 
