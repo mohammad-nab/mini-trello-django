@@ -1,3 +1,5 @@
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -119,6 +121,17 @@ class CreateTaskView(LoginRequiredMixin, views.View):
                 project=task.column.project,
                 activity_type="create-task",
                 description=f"{request.user} created {task.title} task",
+            )
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f"project_{self.column.project.pk}",{
+                    "type": "create_task",
+                    "task_id": task.id,
+                    "title": task.title,
+                    "column_id": task.column.id,
+                    "assigned_to": task.assigned_to.id if task.assigned_to else None,
+                    "order": task.order,
+                }
             )
             return redirect('projects:detail-project',pk=self.column.project.pk )
 
