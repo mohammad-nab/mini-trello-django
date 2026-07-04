@@ -212,6 +212,17 @@ class MoveTaskView(LoginRequiredMixin, views.View):
             description=f"{request.user} moved {task.title} task",
         )
 
+        channel_layer = get_channel_layer()
+
+        async_to_sync(channel_layer.group_send)(
+            f"project_{column.project.id}",
+            {
+                "type": "move_task",
+                "task_id": task.id,
+                "new_column_id": column.id,
+            }
+        )
+
         return JsonResponse({
             "success": True,
             "task_id": task.id,

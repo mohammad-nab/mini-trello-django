@@ -1,7 +1,6 @@
 import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
-from channels.layers import get_channel_layer
 
 
 class ProjectConsumer(WebsocketConsumer):
@@ -18,14 +17,12 @@ class ProjectConsumer(WebsocketConsumer):
         )
 
     def receive(self, text_data=None, bytes_data=None):
-        text_data_json = json.loads(text_data)
-        event_type = text_data_json.get("type")
+        data = json.loads(text_data)
 
-        if event_type == "task_created":
-            async_to_sync(self.channel_layer.group_send)(
-                self.group_name,
-                text_data_json
-            )
+        async_to_sync(self.channel_layer.group_send)(
+            self.group_name,
+            data
+        )
 
     def create_task(self, event):
         self.send(text_data=json.dumps({
@@ -35,4 +32,11 @@ class ProjectConsumer(WebsocketConsumer):
             "column_id": event["column_id"],
             "assigned_to": event["assigned_to"],
             "order": event["order"],
+        }))
+
+    def move_task(self, event):
+        self.send(text_data=json.dumps({
+            "type": "move_task",
+            "task_id": event["task_id"],
+            "new_column_id": event["new_column_id"],
         }))
