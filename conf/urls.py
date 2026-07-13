@@ -28,6 +28,6 @@ urlpatterns = [
 
     # API
     path("api/accounts/", include("accounts.api.urls")),
-    # path("api/projects/", include("projects.api.urls")),
+    path("api/", include("projects.api.urls")),
     # path("api/tasks/", include("tasks.api.urls")),
 ]
