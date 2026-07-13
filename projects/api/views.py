@@ -21,3 +21,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
             permission_classes = [IsProjectOwner]
 
         return [permission() for permission in permission_classes]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+
